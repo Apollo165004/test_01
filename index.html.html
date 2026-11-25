@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Estante de Histórias — Apollo e Carolina</title>
+  <style>
+    :root {
+      --topo-escuro: #1d1e22;
+      --faixa-pessego: #f7d6c4;
+      --etiqueta-laranja: #ea580c;
+      --fundo-pagina: #ffffff;
+      --fundo-suave: #f8f7f5;
+      --texto-principal: #1e1f24;
+      --texto-secundario: #525560;
+      --borda-suave: #e5e7eb;
+      --vermelho-botao: #c81e1e;
+      --vermelho-hover: #9b1c1c;
+      --vermelho-ativo: #771d1d;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--fundo-pagina);
+      color: var(--texto-principal);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    header.barra-topo {
+      background-color: var(--topo-escuro);
+      color: #ffffff;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+    }
+
+    .container {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 1.25rem;
+    }
+
+    .topo-interno {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.9rem 0;
+    }
+
+    .marca-area {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+    }
+
+    .selo-marca {
+      border: 2px solid #ffffff;
+      border-radius: 8px;
+      padding: 0.25rem 0.6rem;
+      font-weight: 800;
+      font-size: 0.85rem;
+      letter-spacing: 0.04em;
+      line-height: 1.1;
+      text-transform: uppercase;
+    }
+
+    .titulo-site {
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: #ffffff;
+      text-decoration: none;
+    }
+
+    .navegacao-abas {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.55rem;
+    }
+
+    .btn-vermelho {
+      background-color: var(--vermelho-botao);
+      color: #ffffff;
+      border: 2px solid var(--vermelho-botao);
+      border-radius: 8px;
+      padding: 0.55rem 1rem;
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      text-decoration: none;
+      transform: scale(1);
+      transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+                  background-color 0.2s ease,
+                  border-color 0.2s ease,
+                  box-shadow 0.2s ease;
+    }
+
+    .btn-vermelho:hover,
+    .btn-vermelho:focus-visible {
+      background-color: var(--vermelho-hover);
+      border-color: #ffffff;
+      transform: scale(1.09);
+      box-shadow: 0 8px 20px rgba(200, 30, 30, 0.38);
+      outline: none;
+    }
+
+    .btn-vermelho.ativo {
+      background-color: var(--vermelho-ativo);
+      border-color: #fde68a;
+      transform: scale(1.08);
+      box-shadow: 0 0 0 3px rgba(253, 230, 138, 0.45), 0 8px 20px rgba(119, 29, 29, 0.45);
+    }
+
+    .faixa-hero {
+      background-color: var(--faixa-pessego);
+      padding: 3rem 0;
+      border-bottom: 1px solid #edd0c0;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(260px, 380px) 1fr;
+      gap: 2.5rem;
+      align-items: center;
+    }
+
+    .moldura-ilustracao {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .recorte-ilustracao {
+      width: 270px;
+      height: 270px;
+      background: linear-gradient(145deg, #ffffff 0%, #fff1e8 100%);
+      border-radius: 38% 62% 55% 45% / 44% 38% 62% 56%;
+      border: 3px solid #ffffff;
+      box-shadow: 0 14px 30px rgba(30, 31, 36, 0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 1.5rem;
+    }
+
+    .icone-ilustracao {
+      font-size: 3rem;
+      line-height: 1;
+      margin-bottom: 0.6rem;
+    }
+
+    .legenda-ilustracao {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--texto-principal);
+    }
+
+    .etiqueta-boas-vindas {
+      position: absolute;
+      right: 6px;
+      bottom: 24px;
+      background-color: var(--etiqueta-laranja);
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 0.78rem;
+      letter-spacing: 0.06em;
+      padding: 0.35rem 0.7rem;
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(234, 88, 12, 0.35);
+      text-transform: uppercase;
+    }
+
+    .hero-conteudo h1 {
+      margin: 0 0 0.85rem;
+      font-size: clamp(1.8rem, 3.4vw, 2.6rem);
+      line-height: 1.18;
+      color: var(--texto-principal);
+    }
+
+    .hero-conteudo p {
+      margin: 0 0 1.4rem;
+      font-size: 1.05rem;
+      color: var(--texto-secundario);
+      max-width: 60ch;
+    }
+
+    .hero-acoes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.85rem;
+    }
+
+    main {
+      padding: 2.5rem 0 4rem;
+    }
+
+    .painel-aba {
+      display: none;
+    }
+
+    .painel-aba.ativo {
+      display: block;
+    }
+
+    .secao-rolagem {
+      margin-bottom: 3rem;
+      opacity: 0;
+      transform: translateY(26px);
+      transition: opacity 0.65s ease, transform 0.65s ease;
+    }
+
+    .secao-rolagem.visivel {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .cabecalho-secao {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.75rem;
+      border-bottom: 2px solid var(--borda-suave);
+      padding-bottom: 0.65rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .cabecalho-secao h2 {
+      margin: 0;
+      font-size: 1.55rem;
+      color: var(--texto-principal);
+    }
+
+    .cabecalho-secao span {
+      font-size: 0.92rem;
+      color: var(--texto-secundario);
+    }
+
+    .grade-elaboradores {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .cartao-elaborador {
+      background-color: var(--fundo-suave);
+      border: 1px solid var(--borda-suave);
+      border-radius: 14px;
+      padding: 1.5rem;
+    }
+
+    .cartao-elaborador h3 {
+      margin: 0 0 0.5rem;
+      font-size: 1.25rem;
+      color: var(--vermelho-botao);
+    }
+
+    .cartao-elaborador p {
+      margin: 0;
+      color: var(--texto-secundario);
+    }
+
+    .estante-sequencial {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .cartao-livro {
+      background-color: #ffffff;
+      border: 1px solid var(--borda-suave);
+      border-radius: 14px;
+      padding: 1.15rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 1rem;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+    }
+
+    .capa-livro {
+      aspect-ratio: 4 / 3;
+      border-radius: 10px;
+      background-color: var(--faixa-pessego);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      text-align: center;
+      font-weight: 700;
+      color: var(--texto-principal);
+    }
+
+    .capa-livro small {
+      margin-top: 0.35rem;
+      font-weight: 500;
+      color: var(--texto-secundario);
+    }
+
+    .cartao-livro h3 {
+      margin: 0 0 0.4rem;
+      font-size: 1.15rem;
+    }
+
+    .cartao-livro p {
+      margin: 0;
+      font-size: 0.95rem;
+      color: var(--texto-secundario);
+    }
+
+    .barra-superior-livro {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 1.75rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--borda-suave);
+    }
+
+    .bloco-informacao {
+      background-color: var(--fundo-suave);
+      border: 1px solid var(--borda-suave);
+      border-radius: 14px;
+      padding: 1.6rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .bloco-informacao h3 {
+      margin: 0 0 0.65rem;
+      font-size: 1.25rem;
+      color: var(--texto-principal);
+    }
+
+    .bloco-informacao p {
+      margin: 0;
+      color: var(--texto-secundario);
+    }
+
+    footer {
+      background-color: var(--topo-escuro);
+      color: #d1d5db;
+      padding: 1.75rem 0;
+      font-size: 0.92rem;
+    }
+
+    .rodape-interno {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    @media (max-width: 820px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+
+      .hero-conteudo p {
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .hero-acoes {
+        justify-content: center;
+      }
+    }
+
+    .painel-edicao {
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: .75rem;
+      padding: .7rem 1.25rem;
+      background: #fff7ed;
+      border-bottom: 1px solid #fed7aa;
+      color: #7c2d12;
+      font-size: .9rem;
+    }
+    .painel-edicao .acoes-edicao {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5rem;
+    }
+    .painel-edicao button {
+      border: 1px solid var(--vermelho-botao);
+      border-radius: 8px;
+      padding: .45rem .8rem;
+      background: var(--vermelho-botao);
+      color: #fff;
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .painel-edicao button.secundario {
+      background: #fff;
+      color: var(--vermelho-botao);
+    }
+    body.modo-edicao [data-texto-editavel="true"] {
+      outline: 1px dashed #ea580c;
+      outline-offset: 3px;
+      border-radius: 2px;
+      cursor: text;
+    }
+    body.modo-edicao [data-texto-editavel="true"]:focus {
+      outline: 2px solid #c2410c;
+      background: #fffaf5;
+    }
+    .estado-edicao {
+      min-width: 9rem;
+      font-size: .82rem;
+      color: #7c2d12;
+    }
+
+
+    .area-imagem-editavel {
+      position: relative;
+    }
+    body.modo-edicao .area-imagem-editavel {
+      cursor: pointer;
+      outline: 2px dashed #ea580c;
+      outline-offset: 3px;
+    }
+    body.modo-edicao .area-imagem-editavel::after {
+      content: "📷 Clique para trocar a imagem";
+      position: absolute;
+      left: 50%;
+      bottom: .55rem;
+      transform: translateX(-50%);
+      z-index: 5;
+      width: max-content;
+      max-width: 90%;
+      padding: .3rem .55rem;
+      border-radius: 6px;
+      background: rgba(29, 30, 34, .88);
+      color: #fff;
+      font-size: .75rem;
+      font-weight: 600;
+      pointer-events: none;
+    }
+    .imagem-personalizada {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: inherit;
+      z-index: 0;
+    }
+    .recorte-ilustracao .imagem-personalizada {
+      border-radius: inherit;
+    }
+    .capa-livro .imagem-personalizada {
+      border-radius: inherit;
+    }
+    .area-imagem-editavel > :not(.imagem-personalizada) {
+      position: relative;
+      z-index: 1;
+      text-shadow: 0 1px 5px rgba(255,255,255,.95);
+    }
+    .capa-livro.com-imagem > :not(.imagem-personalizada) {
+      background: rgba(255,255,255,.78);
+      border-radius: 5px;
+      padding: .15rem .35rem;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="painel-edicao" id="painel-edicao" contenteditable="false">
+    <strong>✏️ Edição do site</strong>
+    <span>Ative a edição para alterar títulos, parágrafos, nomes e textos dos botões.</span>
+    <div class="acoes-edicao">
+      <button type="button" id="alternar-edicao">Ativar edição</button>
+      <button type="button" class="secundario" id="salvar-edicao">Salvar alterações</button>
+      <button type="button" class="secundario" id="restaurar-edicao">Restaurar original</button>
+    </div>
+    <span class="estado-edicao" id="estado-edicao" aria-live="polite">Edição desativada</span>
+  </div>
+
+  <input type="file" id="seletor-imagem" accept="image/*" hidden />
+  <header class="barra-topo">
+    <div class="container topo-interno">
+      <div class="marca-area">
+        <span class="selo-marca">Acervo<br />Infantil</span>
+        <a href="#topo" class="titulo-site" onclick="selecionarAba('home'); return false;">Estante de Histórias</a>
+      </div>
+
+      <nav class="navegacao-abas" aria-label="Abas principais">
+        <button type="button" class="btn-vermelho ativo" data-aba="home" onclick="selecionarAba('home')">Início</button>
+        <button type="button" class="btn-vermelho" data-aba="livro-1" onclick="selecionarAba('livro-1')">Livro 1</button>
+        <button type="button" class="btn-vermelho" data-aba="livro-2" onclick="selecionarAba('livro-2')">Livro 2</button>
+        <button type="button" class="btn-vermelho" data-aba="livro-3" onclick="selecionarAba('livro-3')">Livro 3</button>
+        <button type="button" class="btn-vermelho" data-aba="livro-4" onclick="selecionarAba('livro-4')">Livro 4</button>
+        <button type="button" class="btn-vermelho" data-aba="documentos-curriculares" onclick="selecionarAba('documentos-curriculares')">Documentos curriculares</button>
+      </nav>
+    </div>
+  </header>
+
+  <section id="topo" class="faixa-hero">
+    <div class="container hero-grid">
+      <div class="moldura-ilustracao">
+        <div class="recorte-ilustracao">
+          <div class="icone-ilustracao" aria-hidden="true">📚✨</div>
+          <div class="legenda-ilustracao">Leituras, conversas e descobertas para a infância</div>
+        </div>
+        <span class="etiqueta-boas-vindas">Boas-vindas</span>
+      </div>
+
+      <div class="hero-conteudo">
+        <h1>Bem-vindos à Estante de Histórias de Apollo e Carolina</h1>
+        <p>
+          Um espaço criado para apresentar o nosso projeto de livros infantis. Ao descer a página, conheça quem elabora o site e explore a estante em sequência; ao abrir a aba de cada livro, encontre resumo, o que pode ser trabalhado e outras informações pertinentes.
+        </p>
+        <div class="hero-acoes">
+          <button type="button" class="btn-vermelho" onclick="irParaSecao('sec-elaboradores')">Conhecer Apollo e Carolina</button>
+          <button type="button" class="btn-vermelho" onclick="irParaSecao('sec-estante')">Ver estante em sequência</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main class="container">
+    <div id="aba-home" class="painel-aba ativo">
+      <section id="sec-elaboradores" class="secao-rolagem">
+        <div class="cabecalho-secao">
+          <h2>Apresentação do Site e dos Elaboradores</h2>
+          <span>Role para baixo para acompanhar cada seção</span>
+        </div>
+
+        <div class="bloco-informacao">
+          <h3>Sobre o Site</h3>
+          <p>
+            Este site reúne livros infantis organizados em abas individuais, pensados para apoiar leituras em família, na escola e em espaços educativos. Cada obra conta com resumo, sugestões do que pode ser trabalhado e outras informações pertinentes.
+          </p>
+        </div>
+
+        <div class="grade-elaboradores">
+          <article class="cartao-elaborador">
+            <h3>Apollo</h3>
+            <p>
+              Espaço reservado para a apresentação do Apollo: trajetória, olhar sobre a literatura infantil, curadoria das histórias e participação na elaboração do site.
+            </p>
+          </article>
+
+          <article class="cartao-elaborador">
+            <h3>Carolina</h3>
+            <p>
+              Espaço reservado para a apresentação da Carolina: trajetória, olhar sobre a mediação de leitura, propostas educativas e participação na elaboração do site.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section id="sec-estante" class="secao-rolagem">
+        <div class="cabecalho-secao">
+          <h2>Estante de Livros em Sequência</h2>
+          <span>Clique em um livro para abrir a aba dele</span>
+        </div>
+
+        <div class="estante-sequencial">
+          <article class="cartao-livro">
+            <div>
+              <div class="capa-livro">
+                Livro 01
+                <small>Ilustração / Capa em breve</small>
+              </div>
+              <h3>Título do Livro 1</h3>
+              <p>Breve chamada introdutória da obra para convidar à leitura da aba completa.</p>
+            </div>
+            <button type="button" class="btn-vermelho" onclick="selecionarAba('livro-1')">Abrir aba do Livro 1</button>
+          </article>
+
+          <article class="cartao-livro">
+            <div>
+              <div class="capa-livro">
+                Livro 02
+                <small>Ilustração / Capa em breve</small>
+              </div>
+              <h3>Título do Livro 2</h3>
+              <p>Breve chamada introdutória da obra para convidar à leitura da aba completa.</p>
+            </div>
+            <button type="button" class="btn-vermelho" onclick="selecionarAba('livro-2')">Abrir aba do Livro 2</button>
+          </article>
+
+          <article class="cartao-livro">
+            <div>
+              <div class="capa-livro">
+                Livro 03
+                <small>Ilustração / Capa em breve</small>
+              </div>
+              <h3>Título do Livro 3</h3>
+              <p>Breve chamada introdutória da obra para convidar à leitura da aba completa.</p>
+            </div>
+            <button type="button" class="btn-vermelho" onclick="selecionarAba('livro-3')">Abrir aba do Livro 3</button>
+          </article>
+
+          <article class="cartao-livro">
+            <div>
+              <div class="capa-livro">
+                Livro 04
+                <small>Ilustração / Capa em breve</small>
+              </div>
+              <h3>Título do Livro 4</h3>
+              <p>Breve chamada introdutória da obra para convidar à leitura da aba completa.</p>
+            </div>
+            <button type="button" class="btn-vermelho" onclick="selecionarAba('livro-4')">Abrir aba do Livro 4</button>
+          </article>
+        </div>
+      </section>
+    </div>
+
+    <div id="aba-livro-1" class="painel-aba">
+      <div class="barra-superior-livro">
+        <button type="button" class="btn-vermelho" onclick="selecionarAba('home')">← Voltar para a Home e Estante</button>
+        <span>Aba do Livro 1 — Role para ver todas as informações</span>
+      </div>
+      <div class="bloco-informacao secao-rolagem">
+        <h3>Título do Livro 1 — Resumo</h3>
+        <p>Resumo da história, personagens principais, enredo e atmosfera da obra.</p>
+      </div>
+      <div class="bloco-informacao secao-rolagem">
+        <h3>O que pode ser trabalhado nele</h3>
+        <p>Sugestões de temas, rodas de conversa, atividades criativas, leitura em voz alta e conexões pedagógicas.</p>
+      </div>
+      <div class="bloco-informacao secao-rolagem">
+        <h3>Outras informações pertinentes</h3>
+        <p>Observações de Apollo e Carolina, faixa etária indicativa, referências ou notas complementares do livro.</p>
+      </div>
+    </div>
+
+    <div id="aba-livro-2" class="painel-aba">
+      <div class="barra-superior-livro">
+        <button type="button" class="btn-vermelho" onclick="selecionarAba('home')">← Voltar para a Home e Estante</button>
+        <span>Aba do Livro 2 — Role para ver todas as informações</span>
+      </div>
+      <div class="bloco-informacao secao-rolagem">
+        <h3>Título do Livro 2 — Resumo</h3>
+        <p>Resumo da história, personagens principais, enredo e atmosfera da obra.</p>
+      </div>
+      <div class="bloco-informacao secao-rolagem">
+        <h3>O que pode ser trabalhado nele</h3>
+        <p>Sugestões de temas, rodas de conversa, atividades criativas, leitura em voz alta e conexões pedagógicas.</p>
+      </div>
+      <div class="bloco-informacao secao-rolagem">
+        <h3>Outras informações pertinentes</h3>
+        <p>Observações de Apollo e Carolina, faixa etária indicativa, referências ou notas complementares do livro.</p>
+      </div>
+    </div>
+
+    <div id="aba-livro-3" class="painel-aba">
+      <div class="barra-superior-livro">
+        <button type="button" class="btn-vermelho" onclick="selecionarAba('home')">← Voltar para a Home e Estante</button>
+        <span>Aba do Livro 3 — Role para ver todas as informações</span>
+      </div>
+      <div class="bloco-informacao secao-rolagem">
+        <h3>Título do Livro 3 — Resumo</h3>
+        <p>Resumo da história, personagens principais, enredo e atmosfera da obra.</p>
+      </div>
+      <div class="bloco-informacao secao-rolagem">
+        <h3>O que pode ser trabalhado nele</h3>
+        <p>Sugestões de temas, rodas de conversa, atividades criativas, leitura em voz alta e conexões pedagógicas.</p>
+      </div>
+      <div class="bloco-informacao secao-rolagem">
+        <h3>Outras informações pertinentes</h3>
+        <p>Observações de Apollo e Carolina, faixa etária indicativa, referências ou notas complementares do livro.</p>
+      </div>
+    </div>
+
+    <div id="aba-livro-4" class="painel-aba">
+      <div class="barra-superior-livro">
+        <button type="button" class="btn-vermelho" onclick="selecionarAba('home')">← Voltar para a Home e Estante</button>
+        <span>Aba do Livro 4 — Role para ver todas as informações</span>
+      </div>
+      <div class="bloco-informacao secao-rolagem">
+        <h3>Título do Livro 4 — Resumo</h3>
+        <p>Resumo da história, personagens principais, enredo e atmosfera da obra.</p>
+      </div>
+      <div class="bloco-informacao secao-rolagem">
+        <h3>O que pode ser trabalhado nele</h3>
+        <p>Sugestões de temas, rodas de conversa, atividades criativas, leitura em voz alta e conexões pedagógicas.</p>
+      </div>
+      <div class="bloco-informacao secao-rolagem">
+        <h3>Outras informações pertinentes</h3>
+        <p>Observações de Apollo e Carolina, faixa etária indicativa, referências ou notas complementares do livro.</p>
+      </div>
+    </div>
+
+    <div id="aba-documentos-curriculares" class="painel-aba">
+      <div class="barra-superior-livro">
+        <button type="button" class="btn-vermelho" onclick="selecionarAba('home')">← Voltar para a Home e Estante</button>
+        <span>Documentos curriculares — referências para o trabalho com a literatura infantil</span>
+      </div>
+
+      <div class="bloco-informacao secao-rolagem">
+        <h3>Documentos curriculares de referência</h3>
+        <p>Espaço destinado à apresentação de documentos oficiais e orientações curriculares que fundamentam o trabalho pedagógico com a literatura infantil.</p>
+      </div>
+
+      <div class="bloco-informacao secao-rolagem">
+        <h3>Orientações e objetivos de aprendizagem</h3>
+        <p>Reunião de objetivos, competências, habilidades e orientações relacionadas à leitura, à formação do leitor e às experiências literárias na infância.</p>
+      </div>
+
+      <div class="bloco-informacao secao-rolagem">
+        <h3>Relação com as obras da estante</h3>
+        <p>Espaço para relacionar cada livro às propostas e aos referenciais curriculares, indicando possibilidades de leitura, conversa e mediação.</p>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container rodape-interno">
+      <span>Estante de Histórias — Elaborado por Apollo e Carolina</span>
+      <span>Estrutura preparada para receber os livros infantis</span>
+    </div>
+  </footer>
+
+  <script>
+    const observadorRolagem = new IntersectionObserver(
+      (entradas) => {
+        entradas.forEach((entrada) => {
+          if (entrada.isIntersecting) {
+            entrada.target.classList.add('visivel');
+          }
+        });
+      },
+      { threshold: 0.12 }
+    );
+
+    function atualizarObservacaoVisivel() {
+      document.querySelectorAll('.painel-aba.ativo .secao-rolagem').forEach((secao) => {
+        secao.classList.remove('visivel');
+        observadorRolagem.observe(secao);
+        const rect = secao.getBoundingClientRect();
+        if (rect.top < window.innerHeight * 0.92) {
+          secao.classList.add('visivel');
+        }
+      });
+    }
+
+    function selecionarAba(chaveAba) {
+      document.querySelectorAll('.painel-aba').forEach((painel) => {
+        painel.classList.remove('ativo');
+      });
+
+      const painelAlvo = document.getElementById(`aba-${chaveAba}`);
+      if (painelAlvo) {
+        painelAlvo.classList.add('ativo');
+      }
+
+      document.querySelectorAll('.navegacao-abas .btn-vermelho').forEach((btn) => {
+        btn.classList.toggle('ativo', btn.dataset.aba === chaveAba);
+      });
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setTimeout(atualizarObservacaoVisivel, 60);
+    }
+
+    function irParaSecao(idSecao) {
+      selecionarAba('home');
+      setTimeout(() => {
+        const alvo = document.getElementById(idSecao);
+        if (alvo) {
+          alvo.classList.add('visivel');
+          alvo.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 120);
+    }
+
+    window.addEventListener('DOMContentLoaded', atualizarObservacaoVisivel);
+
+    // Edição de textos: os elementos textuais são editáveis sem alterar a estrutura ou os estilos.
+    const CHAVE_EDICAO = 'estanteHistoriasTextosEditados_v1';
+    const elementosEditaveis = [
+      'h1', 'h2', 'h3', 'p', 'span', 'small', 'a', 'button', 'label'
+    ];
+
+    function prepararTextosEditaveis() {
+      document.querySelectorAll(elementosEditaveis.join(',')).forEach((elemento) => {
+        if (elemento.closest('#painel-edicao')) return;
+        if (elemento.closest('script, style')) return;
+        // Não tornar editável o selo de marca com quebra de linha estrutural? Seu texto também pode ser alterado.
+        elemento.setAttribute('data-texto-editavel', 'true');
+        elemento.setAttribute('spellcheck', 'true');
+      });
+    }
+
+    const botaoEdicao = document.getElementById('alternar-edicao');
+    const botaoSalvar = document.getElementById('salvar-edicao');
+    const botaoRestaurar = document.getElementById('restaurar-edicao');
+    const estadoEdicao = document.getElementById('estado-edicao');
+
+    function definirModoEdicao(ativado) {
+      document.body.classList.toggle('modo-edicao', ativado);
+      document.querySelectorAll('[data-texto-editavel="true"]').forEach((elemento) => {
+        elemento.setAttribute('contenteditable', ativado ? 'true' : 'false');
+      });
+      botaoEdicao.textContent = ativado ? 'Concluir edição' : 'Ativar edição';
+      estadoEdicao.textContent = ativado ? 'Clique em qualquer texto para editar' : 'Edição desativada';
+    }
+
+    function salvarTextos() {
+      const dados = [...document.querySelectorAll('[data-texto-editavel="true"]')].map((elemento) => elemento.innerHTML);
+      localStorage.setItem(CHAVE_EDICAO, JSON.stringify(dados));
+      estadoEdicao.textContent = 'Alterações salvas neste navegador';
+    }
+
+    function carregarTextosSalvos() {
+      const salvo = localStorage.getItem(CHAVE_EDICAO);
+      if (!salvo) return;
+      try {
+        const dados = JSON.parse(salvo);
+        const elementos = [...document.querySelectorAll('[data-texto-editavel="true"]')];
+        elementos.forEach((elemento, indice) => {
+          if (typeof dados[indice] === 'string') elemento.innerHTML = dados[indice];
+        });
+        estadoEdicao.textContent = 'Alterações anteriores carregadas';
+      } catch (erro) {
+        estadoEdicao.textContent = 'Não foi possível carregar as alterações';
+      }
+    }
+
+    botaoEdicao.addEventListener('click', () => {
+      const ativado = !document.body.classList.contains('modo-edicao');
+      definirModoEdicao(ativado);
+    });
+
+    botaoSalvar.addEventListener('click', () => {
+      salvarTextos();
+    });
+
+    botaoRestaurar.addEventListener('click', () => {
+      const confirmar = window.confirm('Deseja apagar as alterações salvas neste navegador e voltar aos textos originais do arquivo?');
+      if (!confirmar) return;
+      localStorage.removeItem(CHAVE_EDICAO);
+      window.location.reload();
+    });
+
+    prepararTextosEditaveis();
+    carregarTextosSalvos();
+
+    // Troca de imagens no modo de edição. As imagens são reduzidas para facilitar o armazenamento local.
+    const CHAVE_IMAGENS = 'estanteHistoriasImagensEditadas_v1';
+    const seletorImagem = document.getElementById('seletor-imagem');
+    let areaImagemSelecionada = null;
+
+    function prepararAreasDeImagem() {
+      document.querySelectorAll('.recorte-ilustracao, .capa-livro, img').forEach((elemento, indice) => {
+        if (elemento.closest('#painel-edicao')) return;
+        if (elemento.tagName === 'IMG') {
+          elemento.classList.add('area-imagem-editavel');
+          if (!elemento.dataset.imageSlot) elemento.dataset.imageSlot = `imagem-${indice}`;
+        } else {
+          elemento.classList.add('area-imagem-editavel');
+          if (!elemento.dataset.imageSlot) elemento.dataset.imageSlot =
+            elemento.classList.contains('recorte-ilustracao') ? 'ilustracao-principal' :
+            `capa-livro-${[...document.querySelectorAll('.capa-livro')].indexOf(elemento) + 1}`;
+        }
+      });
+    }
+
+    function lerImagensSalvas() {
+      try { return JSON.parse(localStorage.getItem(CHAVE_IMAGENS) || '{}'); }
+      catch (erro) { return {}; }
+    }
+
+    function aplicarImagem(area, dataUrl) {
+      if (area.tagName === 'IMG') {
+        area.src = dataUrl;
+        return;
+      }
+      let imagem = area.querySelector(':scope > .imagem-personalizada');
+      if (!imagem) {
+        imagem = document.createElement('img');
+        imagem.className = 'imagem-personalizada';
+        imagem.alt = 'Imagem adicionada pelo editor';
+        area.prepend(imagem);
+      }
+      imagem.src = dataUrl;
+      area.classList.add('com-imagem');
+    }
+
+    function carregarImagensSalvas() {
+      const imagens = lerImagensSalvas();
+      document.querySelectorAll('[data-image-slot]').forEach((area) => {
+        const imagem = imagens[area.dataset.imageSlot];
+        if (imagem) aplicarImagem(area, imagem);
+      });
+    }
+
+    function redimensionarImagem(arquivo) {
+      return new Promise((resolve, reject) => {
+        const leitor = new FileReader();
+        leitor.onload = () => {
+          const imagem = new Image();
+          imagem.onload = () => {
+            const limite = 1400;
+            const escala = Math.min(1, limite / Math.max(imagem.width, imagem.height));
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.round(imagem.width * escala);
+            canvas.height = Math.round(imagem.height * escala);
+            const contexto = canvas.getContext('2d');
+            contexto.drawImage(imagem, 0, 0, canvas.width, canvas.height);
+            resolve(canvas.toDataURL('image/jpeg', 0.82));
+          };
+          imagem.onerror = reject;
+          imagem.src = leitor.result;
+        };
+        leitor.onerror = reject;
+        leitor.readAsDataURL(arquivo);
+      });
+    }
+
+    document.addEventListener('click', (evento) => {
+      if (!document.body.classList.contains('modo-edicao')) return;
+      const area = evento.target.closest('.area-imagem-editavel');
+      if (!area || area.closest('#painel-edicao')) return;
+      areaImagemSelecionada = area;
+      seletorImagem.click();
+    });
+
+    seletorImagem.addEventListener('change', async () => {
+      const arquivo = seletorImagem.files && seletorImagem.files[0];
+      if (!arquivo || !areaImagemSelecionada) return;
+      if (!arquivo.type.startsWith('image/')) {
+        estadoEdicao.textContent = 'Selecione um arquivo de imagem';
+        return;
+      }
+      try {
+        const dataUrl = await redimensionarImagem(arquivo);
+        aplicarImagem(areaImagemSelecionada, dataUrl);
+        const imagens = lerImagensSalvas();
+        imagens[areaImagemSelecionada.dataset.imageSlot] = dataUrl;
+        localStorage.setItem(CHAVE_IMAGENS, JSON.stringify(imagens));
+        estadoEdicao.textContent = 'Imagem atualizada e salva neste navegador';
+      } catch (erro) {
+        estadoEdicao.textContent = 'Não foi possível carregar a imagem';
+      }
+      seletorImagem.value = '';
+      areaImagemSelecionada = null;
+    });
+
+    // Inclui imagens personalizadas no comando de restauração.
+    const restaurarOriginalAnterior = botaoRestaurar.onclick;
+    botaoRestaurar.addEventListener('click', () => {
+      localStorage.removeItem(CHAVE_IMAGENS);
+    });
+
+    prepararAreasDeImagem();
+    carregarImagensSalvas();
+
+
+  </script>
+</body>
+</html>
